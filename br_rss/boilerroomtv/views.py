@@ -13,7 +13,7 @@ def podcast_feed(request: HttpRequest):
         request,
         'rss.xml',
         context=dict(
-            server_url='%s/%s' % (request._get_scheme(), request.get_host()),
+            server_url='%s://%s' % (request._get_scheme(), request.get_host()),
             podcasts=Recording.objects.all(),
         ),
         content_type='application/rss+xml',

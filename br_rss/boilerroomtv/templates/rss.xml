@@ -1,0 +1,45 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+    <channel>
+        <atom:link rel="self" type="application/rss+xml" href="{{ server_url }}{% url 'rss' %}"/>
+        <atom:link rel="alternate" type="text/html" href="{{ server_url }}{% url 'index' %}"/>
+        <link>https://boilerroom.tv</link>
+        <language>en-gb</language>
+
+        <title>Boiler Room</title>
+        <itunes:subtitle>Broadcasting the underground.</itunes:subtitle>
+        <description>Broadcasting the underground.</description>
+        <itunes:summary>Broadcasting the underground.</itunes:summary>
+        <itunes:category text="Music"/>
+        <itunes:keywords>grime, garage, dubstep, house, techno, music</itunes:keywords>
+        <itunes:explicit>yes</itunes:explicit>
+
+        <itunes:author>Boiler Room</itunes:author>
+        <copyright>Boiler Room</copyright>
+
+        <itunes:owner>
+            <itunes:name>Ben Jeffrey</itunes:name>
+            <itunes:email>br-rss@jeffbr13.net</itunes:email>
+        </itunes:owner>
+
+        {% load static %}
+        <itunes:image href="{{ server_url }}{% static 'artwork.png' %}"/>
+
+
+        {% for podcast in podcasts %}
+            <item>
+                <guid>{{ podcast.url }}</guid>
+
+                <title>{{ podcast.title|escape }}</title>
+                <description>{{ podcast.description|escape }}</description>
+                <itunes:summary>{{ podcast.description|escape }}</itunes:summary>
+                <pubDate>{{ podcast.released|date:"r" }}</pubDate>
+
+                <itunes:duration>{{ podcast.duration }}</itunes:duration>
+                <itunes:author>{{ podcast.artists|escape }}</itunes:author>
+
+                <enclosure url="{{ podcast.audio_url|iriencode }}" length="{{ podcast.audio_content_length }}" type="{{ podcast.audio_content_type|escape }}"/>
+            </item>
+        {% endfor %}
+
+    </channel>
+</rss>

@@ -30,29 +30,48 @@
 			}
 		}
 	</style>
+    <!-- icons -->
+    <style>
+        header img {
+            height: 2.4em;
+            display: block;
+        }
+        main img {
+            height: 1.2em;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1><a href="https://boilerroom.tv/"><img src="{% static 'artwork.png' %}" alt="Boiler Room" height="100" /></a><br> unofficial podcast feed</h1>
+        <h1><a href="https://boilerroom.tv/"><img src="{% static 'artwork.png' %}" alt="Boiler Room" /></a> unofficial podcast feed</h1>
     </header>
 
 
     <main>
         <p>Boiler Room has an app but doesn't provide good ol' RSS, so here's a few feeds for your favourite podcasts app:</p>
 
-        <a rel="alternate" type="application/rss+xml" href="{% url 'rss' %}">All Recordings</a>
+        <section>
+            <h2>All Recordings</h2>
+            <ul>
+                <li><a rel="alternate" type="application/rss+xml" href="{% url 'rss' %}">RSS <img src="{% static 'rss.svg' %}" alt=""></a></li>
+                <li><a href="itpc://{{ request.get_host }}{% url 'rss' %}">Apple Podcasts <img src="{% static 'podcast.svg' %}" alt=""></a></li>
+            </ul>
+        </section>
 
         <section>
             <h2>Channel Feeds</h2>
             <p>Recordings curated by style:</p>
-        </section>
-        <ul>
+            <ul>
             {% for channel in channels %}
                 <li>
-                    <a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a>: {{ channel.description }}
+                    <a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a>:
+                    <q>{{ channel.description }}</q>
+                    <a href="{{ channel.get_absolute_url }}"><img src="{% static 'rss.svg' %}" alt="RSS"></a>
+                    <a href="itpc://{{ request.get_host }}{{ channel.get_absolute_url }}"><img src="{% static 'podcast.svg' %}" alt="Apple Podcasts"></a>
                 </li>
             {% endfor %}
-        </ul>
+            </ul>
+        </section>
 
         <section>
             <h2>Genre Feeds</h2>
@@ -60,7 +79,12 @@
             <ul>
                 {% for genre in genres %}
                     <li>
-                        <a href="{{ genre.get_absolute_url }}">{{ genre.title }}</a>{% if genre.description %}: {{ genre.description }}{% endif %}
+                        <a href="{{ genre.get_absolute_url }}">{{ genre.title }}</a>:
+                        {% if genre.description %}
+                            <q>{{ genre.description }}</q>
+                        {% endif %}
+                        <a href="{{ genre.get_absolute_url }}"><img src="{% static 'rss.svg' %}" alt="RSS"></a>
+                        <a href="itpc://{{ request.get_host }}{{ genre.get_absolute_url }}"><img src="{% static 'podcast.svg' %}" alt="Apple Podcasts"></a>
                     </li>
                 {% endfor %}
             </ul>

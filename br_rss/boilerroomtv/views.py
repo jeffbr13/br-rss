@@ -23,6 +23,7 @@ def all_recordings_rss(request: HttpRequest):
         'rss.xml',
         context=dict(
             server_url=server_url,
+            web_link='https://boilerroom.tv',
             channel_title='Boiler Room',
             channel_subtitle='Broadcasting the underground.',
             channel_description='Boiler Room televises underground music as it happens from around the world to a '
@@ -46,6 +47,7 @@ def channel_rss(request: HttpRequest, channel_id: int):
         'rss.xml',
         context=dict(
             server_url=server_url,
+            web_link=channel.web_url,
             channel_title='Boiler Room - %s' % channel.title,
             channel_subtitle=channel.description,
             channel_description=channel.description,
@@ -65,6 +67,7 @@ def genre_rss(request: HttpRequest, genre_id: int):
         'rss.xml',
         context=dict(
             server_url=server_url,
+            web_link=genre.web_url,
             channel_title='Boiler Room - %s' % genre.title,
             channel_description=genre.description,
             channel_keywords='Music, %s' % genre.title,

@@ -2,7 +2,7 @@
     <channel>
         <atom:link rel="self" type="application/rss+xml" href="{{ server_url }}{{ request.path }}"/>
         <atom:link rel="alternate" type="text/html" href="{{ server_url }}{% url 'index' %}"/>
-        <link>https://boilerroom.tv</link>
+        <link>{{ web_link }}</link>
         <language>en-gb</language>
 
         <title>{{ channel_title }}</title>

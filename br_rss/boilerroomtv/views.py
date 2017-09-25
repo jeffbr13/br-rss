@@ -45,7 +45,7 @@ def channel_rss(request: HttpRequest, channel_id: int):
         'rss.xml',
         context=dict(
             server_url=server_url,
-            channel_title=channel.title,
+            channel_title='Boiler Room - %s' % channel.title,
             channel_subtitle=channel.description,
             channel_description=channel.description,
             channel_keywords=channel.keywords,

@@ -2,6 +2,22 @@ from django.db import models
 from django.urls import reverse
 
 
+class Genre(models.Model):
+    url = models.URLField(unique=True)
+    web_url = models.URLField(unique=True)
+    title = models.CharField(max_length=200, unique=True)
+    description = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ('title',)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('genre-rss', kwargs=dict(genre_id=self.id))
+
+
 class Recording(models.Model):
     url = models.URLField(unique=True)
     web_url = models.URLField(unique=True)
@@ -14,6 +30,7 @@ class Recording(models.Model):
     audio_url = models.URLField()
     audio_content_type = models.CharField(max_length=200)
     audio_content_length = models.PositiveIntegerField()
+    genres = models.ManyToManyField(Genre, related_name='recordings')
 
     class Meta:
         ordering = ('-released',)

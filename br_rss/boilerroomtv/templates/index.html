@@ -43,8 +43,8 @@
         <a rel="alternate" type="application/rss+xml" href="{% url 'rss' %}">All Recordings</a>
 
         <section>
-            <h2>Channels</h2>
-            <p>Recordings curated by genre and style:</p>
+            <h2>Channel Feeds</h2>
+            <p>Recordings curated by style:</p>
         </section>
         <ul>
             {% for channel in channels %}
@@ -53,6 +53,18 @@
                 </li>
             {% endfor %}
         </ul>
+
+        <section>
+            <h2>Genre Feeds</h2>
+            <p>Recordings filtered by genre:</p>
+            <ul>
+                {% for genre in genres %}
+                    <li>
+                        <a href="{{ genre.get_absolute_url }}">{{ genre.title }}</a>{% if genre.description %}: {{ genre.description }}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
     </main>
 
     <hr>

@@ -4,10 +4,11 @@ from datetime import datetime, timedelta
 import iso8601
 import requests
 from django.utils.html import strip_tags
+from django.utils.text import slugify
 from huey import crontab
 from huey.contrib.djhuey import db_periodic_task
 
-from .models import Recording, Channel
+from .models import Recording, Channel, Genre
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,10 @@ def update_or_create_recording_from_json(recording_json):
         logger.info('Updating/creating Recording from <%s>…', recording_json['url'])
         d = datetime.strptime(recording_json['duration'], '%H:%M:%S')
         duration = timedelta(hours=d.hour, minutes=d.minute, seconds=d.second)
+        logger.debug('Getting artists for <%s>…', recording_json['url'])
         artists = [requests.get(artist_url).json()['name'] for artist_url in recording_json['artists']]
+        logger.debug('Getting genres for <%s>…', recording_json['url'])
+        genres = [Genre.objects.get(url=genre_url) for genre_url in recording_json['genres']]
         audio_response = requests.head(recording_json['audio_file'])
         audio_response.raise_for_status()
         audio_content_type = audio_response.headers['Content-Type']
@@ -39,6 +43,8 @@ def update_or_create_recording_from_json(recording_json):
                 audio_content_length=audio_content_length,
             )
         )
+        logger.debug('Setting %r genres to %r…', recording, genres)
+        recording.genres.set(genres)
         logger.info(('Created %r.' if created else 'Updated %r.') % recording)
         return recording, created
     else:
@@ -46,7 +52,7 @@ def update_or_create_recording_from_json(recording_json):
         return None, False
 
 
-@db_periodic_task(crontab(minute='0'))
+@db_periodic_task(crontab(minute='5'))
 def scrape_latest_recordings():
     logger.info('Scraping latest recordings…')
     response = requests.get('https://archive.boilerroom.tv/api/recordings/')
@@ -101,3 +107,32 @@ def scrape_channels():
     for c in response.json()['results']:
         update_or_create_channel_from_json(c)
 
+
+def update_or_create_genre_from_json(genre_json):
+    logger.info('Updating/creating genre from <%s>…', genre_json['url'])
+    genre, created = Genre.objects.update_or_create(
+        id=genre_json['id'],
+        url=genre_json['url'],
+        web_url='https://boilerroom.tv/genre/%s/' % slugify(genre_json['title']),
+        defaults=dict(
+            title=genre_json['title'],
+            description=genre_json['description'].strip(),
+        )
+    )
+    logger.info(('Created %r.' if created else 'Updated %r.') % genre)
+
+
+@db_periodic_task(crontab(minute='0'))
+def scrape_genres():
+    logger.info('Scraping genres…')
+    next_url = 'https://archive.boilerroom.tv/api/genres/'
+    while next_url:
+        logger.debug('Scraping genres from <%s>…', next_url)
+        response = requests.get(next_url).json()
+        for g in response['results']:
+            try:
+                update_or_create_genre_from_json(g)
+            except:
+                logger.exception('Issue with genre:')
+        next_url = response.get('next')
+    logger.info('Scraped genres.')

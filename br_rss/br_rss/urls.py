@@ -14,11 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.contrib import admin
 
-from boilerroomtv.views import index, podcast_feed
+from boilerroomtv.views import index, all_recordings_rss, channel_rss
+
 
 urlpatterns = [
     url(r'^$', index, name='index'),
-    url(r'^rss/$', podcast_feed, name='rss'),
+    url(r'^rss/$', all_recordings_rss, name='rss'),
+    url(r'^rss/channels/(?P<channel_id>[0-4])/$', channel_rss, name='channel-rss'),
 ]

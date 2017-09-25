@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Recording(models.Model):
@@ -19,3 +20,22 @@ class Recording(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Channel(models.Model):
+    url = models.URLField(unique=True)
+    web_url = models.URLField(unique=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    keywords = models.CharField(max_length=200, blank=True)
+    thumbnail_url = models.URLField()
+    featured_recordings = models.ManyToManyField(Recording, related_name='featured_in_channels')
+
+    class Meta:
+        ordering = ('id',)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('channel-rss', kwargs=dict(channel_id=self.id))

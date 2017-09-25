@@ -40,7 +40,19 @@
     <main>
         <p>Boiler Room has an app but doesn't provide good ol' RSS, so here's a feed for your favourite podcasts app:</p>
 
-        <a rel="alternate" type="application/rss+xml" href="{% url 'rss' %}">Subscribe to all Recordings</a>
+        <a rel="alternate" type="application/rss+xml" href="{% url 'rss' %}">All Recordings</a>
+
+        <section>
+            <h2>Channels</h2>
+            <p>Recordings curated by genre and style:</p>
+        </section>
+        <ul>
+            {% for channel in channels %}
+                <li>
+                    <a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a>: {{ channel.description }}
+                </li>
+            {% endfor %}
+        </ul>
     </main>
 
     <hr>

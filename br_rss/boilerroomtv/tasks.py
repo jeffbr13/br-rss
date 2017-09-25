@@ -7,8 +7,7 @@ from django.utils.html import strip_tags
 from huey import crontab
 from huey.contrib.djhuey import db_periodic_task
 
-from .models import Recording
-
+from .models import Recording, Channel
 
 logger = logging.getLogger(__name__)
 
@@ -70,4 +69,35 @@ def scrape_all_recordings():
                 logger.exception('Issue with recording:')
         logger.info('Scraped recordings from <%s>.', next_page)
         next_page = response.json().get('next')
+
+
+def update_or_create_channel_from_json(channel_json):
+    logger.info('Updating/creating channel from <%s>…', channel_json['url'])
+    channel, created = Channel.objects.update_or_create(
+        id=channel_json['id'],
+        url=channel_json['url'],
+        web_url='https://boilerroom.tv/channel/%s/' % channel_json['id'],
+        defaults=dict(
+            title='Channel %s' % channel_json['id'],
+            description=channel_json['description'].strip(),
+            thumbnail_url=channel_json['logo_image'],
+        )
+    )
+    logger.info(('Created %r.' if created else 'Updated %r.') % channel)
+    logger.info('Setting %r featured recordings…', channel)
+    featured_playlist_json = requests.get(channel_json['featured_playlist']).json()
+    featured_recordings_json = requests.get(featured_playlist_json['recordings']).json()['results']
+    featured_recordings = [Recording.objects.get(url=r['url']) for r in featured_recordings_json]
+    channel.featured_recordings.set(featured_recordings)
+    logger.debug('%r featured recordings are: %r.', channel, featured_recordings)
+    logger.info('Set %r featured recordings.', channel)
+
+
+@db_periodic_task(crontab(minute='10'))
+def scrape_channels():
+    logger.info('Scraping channels…')
+    response = requests.get('https://archive.boilerroom.tv/api/channels/')
+    response.raise_for_status()
+    for c in response.json()['results']:
+        update_or_create_channel_from_json(c)
 

@@ -40,6 +40,14 @@
             height: 1.2em;
         }
     </style>
+    <script>
+        let is_iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) != null;
+        if (is_iOS) {
+            for (a in document.getElementsByTagName('a')) {
+                a.href.replace('itpc://', 'feed://');
+            }
+        }
+    </script>
 </head>
 <body>
     <header>

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 import iso8601
 import requests
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import strip_tags
 from django.utils.text import slugify
 from huey import crontab
@@ -20,8 +21,15 @@ def update_or_create_recording_from_json(recording_json):
         duration = timedelta(hours=d.hour, minutes=d.minute, seconds=d.second)
         logger.debug('Getting artists for <%s>…', recording_json['url'])
         artists = [requests.get(artist_url).json()['name'] for artist_url in recording_json['artists']]
-        logger.debug('Getting genres for <%s>…', recording_json['url'])
-        genres = [Genre.objects.get(url=genre_url) for genre_url in recording_json['genres']]
+        logger.debug('Updating/creating genres for <%s>…', recording_json['url'])
+        genres = []
+        for genre_url in set(recording_json['genres']):
+            try:
+                genres.append(Genre.objects.get(url=genre_url))
+            except ObjectDoesNotExist:
+                genre_json = requests.get(genre_url).json()
+                update_or_create_genre_from_json(genre_json)
+                genres.append(Genre.objects.get(url=genre_url))
         audio_response = requests.head(recording_json['audio_file'])
         audio_response.raise_for_status()
         audio_content_type = audio_response.headers['Content-Type']

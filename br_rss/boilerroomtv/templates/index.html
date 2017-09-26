@@ -40,16 +40,6 @@
             height: 1.2em;
         }
     </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let is_iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) !== null;
-            if (is_iOS) {
-                for (a in document.getElementsByTagName('a')) {
-                    a.href.replace('itpc://', 'feed://');
-                }
-            }
-        }
-    </script>
 </head>
 <body>
     <header>
@@ -108,4 +98,12 @@
         <p><a href="https://github.com/jeffbr13/br-rss">Source code</a> available under the <a href="https://www.mozilla.org/MPL/2.0/">MPL 2.0</a>.</p>
     </footer>
 </body>
+<script type="text/javascript">
+    let is_iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) !== null;
+    if (is_iOS) {
+        for (a of document.getElementsByTagName('a')) {
+            a.setAttribute('href', a.getAttribute('href').replace('itpc://', 'feed://'));
+        }
+    }
+</script>
 </html>

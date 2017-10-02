@@ -54,7 +54,7 @@
             <h2>All Recordings</h2>
             <ul>
                 <li><a rel="alternate" type="application/rss+xml" href="{% url 'rss' %}">RSS <img src="{% static 'rss.svg' %}" alt=""></a></li>
-                <li><a href="itpc://{{ request.get_host }}{% url 'rss' %}">Apple Podcasts <img src="{% static 'podcast.svg' %}" alt=""></a></li>
+                <li><a href="pcast://{{ request.get_host }}{% url 'rss' %}">Apple Podcasts <img src="{% static 'podcast.svg' %}" alt=""></a></li>
             </ul>
         </section>
 
@@ -67,7 +67,7 @@
                     <a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a>:
                     <q>{{ channel.description }}</q>
                     <a href="{{ channel.get_absolute_url }}"><img src="{% static 'rss.svg' %}" alt="RSS"></a>
-                    <a href="itpc://{{ request.get_host }}{{ channel.get_absolute_url }}"><img src="{% static 'podcast.svg' %}" alt="Apple Podcasts"></a>
+                    <a href="pcast://{{ request.get_host }}{{ channel.get_absolute_url }}"><img src="{% static 'podcast.svg' %}" alt="Apple Podcasts"></a>
                 </li>
             {% endfor %}
             </ul>
@@ -84,7 +84,7 @@
                             <q>{{ genre.description }}</q>
                         {% endif %}
                         <a href="{{ genre.get_absolute_url }}"><img src="{% static 'rss.svg' %}" alt="RSS"></a>
-                        <a href="itpc://{{ request.get_host }}{{ genre.get_absolute_url }}"><img src="{% static 'podcast.svg' %}" alt="Apple Podcasts"></a>
+                        <a href="pcast://{{ request.get_host }}{{ genre.get_absolute_url }}"><img src="{% static 'podcast.svg' %}" alt="Apple Podcasts"></a>
                     </li>
                 {% endfor %}
             </ul>
@@ -98,12 +98,4 @@
         <p><a href="https://github.com/jeffbr13/br-rss">Source code</a> available under the <a href="https://www.mozilla.org/MPL/2.0/">MPL 2.0</a>.</p>
     </footer>
 </body>
-<script type="text/javascript">
-    let is_iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) !== null;
-    if (is_iOS) {
-        for (a of document.getElementsByTagName('a')) {
-            a.setAttribute('href', a.getAttribute('href').replace('itpc://', 'feed://'));
-        }
-    }
-</script>
 </html>

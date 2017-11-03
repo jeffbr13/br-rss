@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from boilerroomtv.views import index, all_recordings_rss, channel_rss, genre_rss
+from boilerroomtv.views import index, AllRecordingsPodcastFeed, ChannelPodcastFeed, GenrePodcastFeed
 
 urlpatterns = [
     url(r'^$', index, name='index'),
-    url(r'^rss/$', all_recordings_rss, name='rss'),
-    url(r'^rss/channels/(?P<channel_id>[0-4])/$', channel_rss, name='channel-rss'),
-    url(r'^rss/genres/(?P<genre_id>\d+)/$', genre_rss, name='genre-rss'),
+    url(r'^rss/$', AllRecordingsPodcastFeed(), name='rss'),
+    url(r'^rss/channels/(?P<channel_id>[0-4])/$', ChannelPodcastFeed(), name='channel-rss'),
+    url(r'^rss/genres/(?P<genre_id>\d+)/$', GenrePodcastFeed(), name='genre-rss'),
 ]
